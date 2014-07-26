@@ -1023,7 +1023,7 @@ later = function() {
     return parseExpr(hasSeconds ? e : "0 " + e);
   };
   later.parse.recur = function() {
-    var schedules = [], exceptions = [], cur, curArr = schedules, curName, values, every, modifier, applyMin, applyMax, i, last;
+    var schedules = [], exceptions = [], cur, curArr = schedules, curName, values, every, modifier, applyMin, applyMax, i, last, clear;
     function add(name, min, max) {
       name = modifier ? name + "_" + modifier : name;
       if (!cur) {
@@ -1046,6 +1046,9 @@ later = function() {
           m: max
         };
       }
+      if (clear) {
+          cur[name] = [];
+      }
       values = applyMin ? [ min ] : applyMax ? [ max ] : values;
       var length = values.length;
       for (i = 0; i < length; i += 1) {
@@ -1054,7 +1057,7 @@ later = function() {
           curName.push(val);
         }
       }
-      values = every = modifier = applyMin = applyMax = 0;
+      values = every = modifier = applyMin = applyMax = clear = 0;
     }
     return {
       schedules: schedules,
@@ -1084,6 +1087,10 @@ later = function() {
       last: function() {
         applyMax = 1;
         return this;
+      },
+      clear: function() {
+          clear = 1;
+          return this;
       },
       time: function() {
         for (var i = 0, len = values.length; i < len; i++) {
@@ -1183,6 +1190,9 @@ later = function() {
         curArr = exceptions;
         cur = null;
         return this;
+      },
+      addSchedule: function (schedule) {
+        curArr.push(schedule);
       }
     };
   };
@@ -1505,5 +1515,88 @@ later = function() {
     }
     return parseScheduleExpr(str.toLowerCase());
   };
+  later.parse.toCronString = function(schedule) {
+    var strCron = "";
+    var s = schedule.s;
+    var m = schedule.m;
+    var h = schedule.h;
+    var D = schedule.D;
+    var M = schedule.M;
+    var d = schedule.d;
+    var i;
+
+    if (s){
+        for (i = 0; i < s.length; ++i) {
+            if (i > 0) {
+                strCron += ',';
+            }
+            strCron += s[i];
+        }
+    }
+    else {
+        strCron += '*';
+    }
+    strCron += " ";
+    if (m) {
+        for (i = 0; i < m.length; ++i) {
+            if (i > 0) {
+                strCron += ',';
+            }
+            strCron += m[i];
+        }
+    }
+    else {
+        strCron += '*';
+    }
+    strCron += " ";
+    if (h) {
+        for (i = 0; i < h.length; ++i) {
+            if (i > 0) {
+                strCron += ',';
+            }
+            strCron += h[i];
+        }
+    }
+    else {
+        strCron += '*';
+    }
+    strCron += " ";
+    if (D) {
+        for (i = 0; i < D.length; ++i) {
+            if (i > 0) {
+                strCron += ',';
+            }
+            strCron += D[i];
+        }
+    }
+    else {
+        strCron += '?';
+    }
+    strCron += " ";
+    if (M) {
+        for (i = 0; i < M.length; ++i) {
+            if (i > 0) {
+                strCron += ',';
+            }
+            strCron += M[i];
+        }
+    }
+    else {
+        strCron += '*';
+    }
+    strCron += " ";
+    if (d) {
+        for (i = 0; i < d.length; ++i) {
+            if (i > 0) {
+                strCron += ',';
+            }
+            strCron += d[i] - 1;
+        }
+    }
+    else {
+        strCron += '*';
+    }
+    return strCron;
+  }
   return later;
 }();
