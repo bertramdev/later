@@ -1047,7 +1047,9 @@ later = function() {
         };
       }
       if (clear) {
-          cur[name] = [];
+        cur[name] = [];
+        clear = 0;
+        return;
       }
       values = applyMin ? [ min ] : applyMax ? [ max ] : values;
       var length = values.length;
