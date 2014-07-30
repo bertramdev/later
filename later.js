@@ -1034,8 +1034,12 @@ later = function() {
         cur[name] = [];
       }
       curName = cur[name];
-      if (every) {
+        if (every) {
+        if (cur.hasOwnProperty('t_a')){
+          min = Math.floor(cur['t_a']/3600);
+        }
         values = [];
+        values.push(min);
         for (i = min; i <= max; i += every) {
           values.push(i);
         }
@@ -1540,6 +1544,9 @@ later = function() {
     }
     strCron += " ";
     if (m) {
+        if (m.length === 0) {
+            strCron += '0';
+        }
         for (i = 0; i < m.length; ++i) {
             if (i > 0) {
                 strCron += ',';
@@ -1592,7 +1599,7 @@ later = function() {
             if (i > 0) {
                 strCron += ',';
             }
-            strCron += d[i] - 1;
+            strCron += d[i];
         }
     }
     else {
